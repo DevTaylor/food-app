@@ -81,6 +81,7 @@
 				09823AAA26AE0C000013FFC4 /* food_app_alphaApp.swift */,
 				09823AAC26AE0C000013FFC4 /* ContentView.swift */,
 				9F6EBD4B26AE0DA600D6DCC8 /* ProfileView.swift */,
+				091D389B26E319A8006AF655 /* EditProfile.swift */,
 				9F6EBD5126AE0E0B00D6DCC8 /* TabBarView.swift */,
 				09A0506D26C5088800E7FD21 /* AddView.swift */,
 				9F6EBD4D26AE0DB200D6DCC8 /* SearchView.swift */,
@@ -90,7 +91,6 @@
 				09823AAE26AE0C020013FFC4 /* Assets.xcassets */,
 				09823AB326AE0C020013FFC4 /* Info.plist */,
 				09823AB026AE0C020013FFC4 /* Preview Content */,
-				091D389B26E319A8006AF655 /* EditProfile.swift */,
 			);
 			path = "food-app-alpha";
 			sourceTree = "<group>";

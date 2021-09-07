@@ -2,7 +2,6 @@
 //  ProfileView.swift
 //  food-app-alpha
 //
-//  Created by Mark Martin on 7/25/21.
 //
 
 import SwiftUI
@@ -14,13 +13,14 @@ struct ProfileView: View
     let posts = ["IMG1", "IMG2", "IMG3", "IMG4", "IMG5", "IMG6", "IMG7", "IMG8", "IMG9", "IMG10", "IMG11", "IMG12", "IMG13", "IMG14", "IMG15", "IMG10-1", "IMG11-1", "IMG12-1", "IMG13-1", "IMG14-1", "IMG15-1"]
 
     @State var profilePicture = "profile-photo-1"
+    @State var profileImage: Image?
     @State var isShowingImagePicker = false
-    
+    @State var imageData = Data.init()
     @State var userName = "username5492"
     @State var name = "no name"
     @State var website = "mathly.io"
     @State var postCount = 0
-    @State var bio = "no bio"
+    @State var bio = "Bio"
     @State var followers = 1742
     @State var following = 1
     @State var postsInCloud = []
@@ -43,15 +43,17 @@ struct ProfileView: View
                             // Profile picture
                             VStack
                             {
-                                Image(profilePicture)
+                                profileImage?
                                     .resizable()
-                                    .scaledToFit()
+                                    .scaledToFill()
                                     .clipShape(Circle())
                                     .frame(width: 110.0, height:110.0)
                                     .onTapGesture {
                                         self.isShowingImagePicker.toggle()
-                                        
+
                                     }
+                                
+                                
                                 Text(name).bold()
 
 
@@ -91,19 +93,23 @@ struct ProfileView: View
         
                     
                         
-                    NavigationLink(destination: EditProfile(nameFieldText: $name, usernameFieldText: $userName, websiteFieldText: $website, bioFieldText: $bio)){
-                        Text("Edit Profile").foregroundColor(Color(#colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1))).frame(width: (UIScreen.main.bounds.width/1.1), height: 35).border(Color(#colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1))).cornerRadius(5)
-                    }
+                    
                         
                     
                     // Bio Here
-                    Text(bio)
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                        .fixedSize(horizontal: false, vertical: /*@START_MENU_TOKEN@*/true/*@END_MENU_TOKEN@*/)
-                        .frame(width: UIScreen.main.bounds.width * 0.80)
-                        .padding(2)
                     
+                    HStack{
+                        Text(bio)
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .frame(width: UIScreen.main.bounds.width * 0.80)
+                            .padding(2)
+                            .multilineTextAlignment(/*@START_MENU_TOKEN@*/.leading/*@END_MENU_TOKEN@*/)
+                        Spacer()
+                    }
+                    NavigationLink(destination: EditProfile(currentProfilePhoto: $profileImage, nameFieldText: $name, usernameFieldText: $userName, websiteFieldText: $website, bioFieldText: $bio)){
+                        Text("Edit Profile").foregroundColor(Color(#colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1))).frame(width: (UIScreen.main.bounds.width/1.1), height: 35).border(Color(#colorLiteral(red: 0.6000000238, green: 0.6000000238, blue: 0.6000000238, alpha: 1)),width: 1).cornerRadius(3)
+                    }
 
                 // Photo content
 
@@ -134,6 +140,7 @@ struct ProfileView: View
                 .navigationBarTitle(userName, displayMode: .inline)
         }.onAppear(perform: {
             getProfileHeader()
+//            loadImage()
         })
         
         
@@ -147,23 +154,31 @@ struct ProfileView: View
         }
     }
         
-    func getProfileHeader(){
+    func getProfileHeader() {
         let query = PFQuery(className:"ProfileHeader")
         query.getObjectInBackground(withId: "s2Hudf19ux") { (profileheader, error) in
             if error == nil {
                 // Success!
+                if let ph = profileheader {
 
-                let file = profileheader?.object(forKey: "profile_photo") as! PFFileObject
-                file.getDataInBackground({
-                    (data,error) -> Void in
-                    
-                    if error == nil {
-                        if let imagedata = data {
-                            let profilePicture = UIImage(data: imagedata)
+                    // then we in fact have a profileheader object
+                    let file = ph["profile_photo"] as! PFFileObject
+                    file.getDataInBackground(block: { (data, e) -> Void in
+                        if e == nil {
                             
+                            if let imagedata = data {
+                                imageData = imagedata
+                                guard let uiImage = UIImage(data: imageData) else {
+                                    return
+                                }
+                                
+                                profileImage = Image(uiImage: uiImage)
+                            }
                         }
-                    }
+
                 })
+                
+                
                 name = profileheader?.object(forKey: "name") as! String
                 userName = profileheader?.object(forKey: "username") as! String
                 website = profileheader?.object(forKey: "website") as! String
@@ -173,6 +188,15 @@ struct ProfileView: View
                 // Fail!
             }
         }
+    }
+    
+    }
+    
+    func loadImage() {
+        
+        
+        
+        
     }
     
     
